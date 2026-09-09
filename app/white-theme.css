@@ -1,0 +1,31 @@
+.copy-message { display:inline-flex; align-items:center; gap:5px; margin-top:8px; padding:4px 7px; border:0; border-radius:6px; background:transparent; color:inherit; opacity:.7; font-size:12px; cursor:pointer; }
+.copy-message:hover,.copy-message:focus-visible { opacity:1; background:rgba(128,128,128,.16); }
+.bubble p { user-select:text; -webkit-user-select:text; }
+.background-options button.white { background:#fff; color:#202335; }
+.background-options button.white small { color:#606779; }
+html[data-chat-theme='white'] { color-scheme:light; --foreground:#202335; --popover:#fff; --popover-foreground:#202335; --muted-foreground:#606779; --border:#dce0e8; }
+html[data-chat-theme='white'] body { background:#eef0f5; color:#202335; }
+.app-shell[data-background='white'] { --shell-art:linear-gradient(135deg,#fff,#f3f5fa); color:#202335; background:#f6f7fb; box-shadow:0 20px 70px #20233512; }
+html[data-chat-theme='white'] :is(.rail,.inbox,.chat-header,.composer-wrap) { background:rgba(255,255,255,.94); border-color:#e1e5ec; color:#202335; }
+html[data-chat-theme='white'] .chat-panel { background:#f4f6fa; }
+html[data-chat-theme='white'] :is(h1,.conversation,.profile-copy,.welcome,.welcome h2,.inbox-empty h3,.person,.composer textarea,.search-box input,.settings-form input,.settings-form textarea) { color:#202335; }
+html[data-chat-theme='white'] :is(.eyebrow,.list-label,.small-note,.composer-note,.conversation-copy > span,.conversation-meta,.my-profile span:not(.avatar),.people-list small,.chat-header span:not(.avatar),.inbox-empty,.inbox-empty p,.welcome p,.message-time,.settings-heading p,.settings-form label > small,.avatar-editor > div span,.scroll-invite) { color:#606779; }
+html[data-chat-theme='white'] :is(.icon-button,.profile-settings,.search-box,.composer,.date-pill,.my-profile,.avatar-editor,.settings-form input,.settings-form textarea,.density-options button) { color:#424b60; background:#f0f2f7; border-color:#dce0e8; }
+html[data-chat-theme='white'] :is(.search-box input,.composer textarea,.settings-form input,.settings-form textarea)::placeholder { color:#727b8c; }
+html[data-chat-theme='white'] :is(.conversation:hover,.conversation.selected,.person:hover) { background:#eaeaf7; border-color:#dce0e8; }
+html[data-chat-theme='white'] .bubble { color:#202335; border-color:#dfe3ec; box-shadow:0 5px 16px #20233508; }
+html[data-chat-theme='white'] .bubble.received { background:#fff; }
+html[data-chat-theme='white'] .bubble.sent { background:color-mix(in srgb,var(--user-accent) 18%,white); }
+html[data-chat-theme='white'] .bubble a { color:#4134a3; }
+html[data-chat-theme='white'] .read { color:#087463; }
+html[data-chat-theme='white'] :is(.attachment-preview,.emoji-picker,.stack-card) { background:#fff; color:#202335; border-color:#dce0e8; }
+html[data-chat-theme='white'] :is(.attachment-preview small,.attachment-preview button,.upload-percent,.my-profile a,.rail-bottom) { color:#606779; }
+html[data-chat-theme='white'] [data-slot='dialog-content'] { color:#202335; background:#fff !important; border-color:#dce0e8; box-shadow:0 30px 90px #20233530; }
+html[data-chat-theme='white'] :is(.settings-form label,.settings-form legend) { color:#424b60; }
+html[data-chat-theme='white'] .reveal-heading { background:linear-gradient(90deg,#202335 var(--reveal),#aab0bf var(--reveal)); background-clip:text; -webkit-background-clip:text; }
+html[data-chat-theme='white'] .accent-options button.active { border-color:#202335; }
+html[data-chat-theme='white'] .rail-action { background:#e8eaf2; color:#424b60; }
+@media(prefers-reduced-motion:reduce) { html[data-chat-theme='white'] .reveal-heading { color:#202335; background:none; } }
+.app-shell, .app-shell *, [data-slot='dialog-content'] { scrollbar-width:none; scroll-behavior:smooth; }
+.app-shell::-webkit-scrollbar, .app-shell *::-webkit-scrollbar, [data-slot='dialog-content']::-webkit-scrollbar { display:none; width:0; height:0; }
+@media(prefers-reduced-motion:reduce) { .app-shell, .app-shell *, [data-slot='dialog-content'] { scroll-behavior:auto; } }

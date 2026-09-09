@@ -15,6 +15,7 @@ const BACKGROUNDS = [
   { id: 'aurora', label: 'Aurora', note: 'Violeta e azul' },
   { id: 'midnight', label: 'Meia-noite', note: 'Azul profundo' },
   { id: 'nebula', label: 'Nebulosa', note: 'Roxo intenso' },
+  { id: 'white', label: 'Branco', note: 'Claro e suave' },
 ] as const;
 
 type Props = {

@@ -5,7 +5,7 @@ export type Profile = {
   bio: string | null;
   avatar_id: string | null;
   accent: string;
-  background: 'aurora' | 'midnight' | 'nebula';
+  background: 'aurora' | 'midnight' | 'nebula' | 'white';
   density: 'comfortable' | 'compact';
 };
 

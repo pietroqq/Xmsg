@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import './aurora.css';
+import './white-theme.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,8 +19,8 @@ export const metadata: Metadata = {
   description:
     'Converse com pessoas pelo @usuário. Compartilhe mensagens, imagens e arquivos de até 5 GB.',
   icons: {
-    icon: '/favicon.jpg',
-    shortcut: '/favicon.jpg',
+    icon: '/favicon-rounded.svg',
+    shortcut: '/favicon-rounded.svg',
     apple: '/favicon.jpg',
   },
 };

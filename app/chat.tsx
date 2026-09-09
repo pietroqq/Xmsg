@@ -10,6 +10,8 @@ import {
   ArrowLeft,
   ArrowUpRight,
   CheckCheck,
+  Copy,
+  Check,
   FileText,
   LogOut,
   MessageCircle,
@@ -110,6 +112,7 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
   const [busy, setBusy] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [filter, setFilter] = useState('');
@@ -122,6 +125,27 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
   const uploadController = useRef<AbortController | null>(null);
   const activeUpload = useRef<string | null>(null);
   activeRef.current = active?.id || null;
+
+  useEffect(() => {
+    document.documentElement.dataset.chatTheme = me?.background || 'aurora';
+    return () => { delete document.documentElement.dataset.chatTheme; };
+  }, [me?.background]);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(null), 2200);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
+  async function copyMessage(message: Message) {
+    const text = message.body || (message.file_id ? message.filename + '\n' + location.origin + '/api/chat/files/' + message.file_id : '');
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(message.id);
+    } catch {
+      setError('Não foi possível copiar. Selecione o texto e use Ctrl+C ou a opção Copiar do celular.');
+    }
+  }
 
   useEffect(() => {
     if (!signedIn) return;
@@ -562,6 +586,10 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
                     )
                   ) : null}
                   {message.body ? <p><MessageText value={message.body} /></p> : null}
+                  <button type="button" className="copy-message" aria-label={copied === message.id ? 'Mensagem copiada' : 'Copiar mensagem'} title="Copiar mensagem" onClick={() => copyMessage(message)}>
+                    {copied === message.id ? <Check size={14} /> : <Copy size={14} />}
+                    <span>{copied === message.id ? 'Copiada' : 'Copiar'}</span>
+                  </button>
                   <span className="message-time">{clock(message.created)}{message.sender === me.id ? <CheckCheck size={15} className={message.read_at ? 'read' : ''} aria-label={message.read_at ? 'Lida' : 'Enviada'} /> : null}</span>
                 </div>
               ))}
@@ -578,7 +606,17 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
                 </div>
               ) : null}
               {emoji ? <div className="emoji-picker">{['😊', '❤️', '👍', '😂', '🎉', '👋', '✨', '🙌'].map((item) => <button key={item} onClick={() => { setBody((current) => current + item); setEmoji(false); }}>{item}</button>)}</div> : null}
-              <form className="composer" onSubmit={send}>
+              <form className="composer" onSubmit={send} onPaste={(event) => {
+                if (busy) return;
+                const pasted = event.clipboardData.files[0];
+                if (!pasted) return;
+                event.preventDefault();
+                if (pasted.size > MAX_FILE_BYTES) { setError('O arquivo deve ter até 5 GB.'); return; }
+                if (file) { setError('Remova ou envie o anexo atual antes de colar outro.'); return; }
+                setFile(pasted);
+                const text = event.clipboardData.getData('text/plain');
+                if (text) setBody((current) => (current + text).slice(0, 8000));
+              }}>
                 <button type="button" className="icon-button" aria-label="Escolher emoji" onClick={() => setEmoji(!emoji)}><Smile /></button>
                 <button type="button" className="icon-button" aria-label="Anexar imagem ou arquivo" onClick={() => input.current?.click()} disabled={busy}><Paperclip /></button>
                 <input type="file" hidden ref={input} onChange={(event) => { const selected = event.target.files?.[0]; if (selected && selected.size > MAX_FILE_BYTES) setError('O arquivo deve ter até 5 GB.'); else setFile(selected || null); event.target.value = ''; }} />

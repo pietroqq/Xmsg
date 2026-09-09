@@ -9,7 +9,7 @@ const MAX_AVATAR_BYTES = 5 * 1024 ** 2;
 const PROFILE_COLUMNS =
   'id, username, name, bio, avatar_id, accent, background, density';
 const ACCENTS = new Set(['#8b7cff', '#66d9c0', '#ff8f70', '#78a8ff', '#f0c76a']);
-const BACKGROUNDS = new Set(['aurora', 'midnight', 'nebula']);
+const BACKGROUNDS = new Set(['aurora', 'midnight', 'nebula', 'white']);
 const DENSITIES = new Set(['comfortable', 'compact']);
 
 const json = (data: unknown, status = 200) =>
