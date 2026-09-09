@@ -21,6 +21,7 @@ import {
   Send,
   Settings,
   Smile,
+  Trash2,
   X,
 } from 'lucide-react';
 import {
@@ -29,6 +30,16 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import type { Conversation, Message, Profile } from './chat-types';
 import ProfileSettings from './profile-settings';
 import WelcomeMotion from './welcome-motion';
@@ -107,6 +118,7 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
   const [searching, setSearching] = useState(false);
   const [newChatOpen, setNewChatOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [body, setBody] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -269,6 +281,23 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
       });
       setNewChatOpen(false);
       setQuery('');
+    } catch (current) {
+      setError((current as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function deleteContact() {
+    if (!active) return;
+    setBusy(true);
+    setError('');
+    try {
+      await api<{ ok: true }>(`/conversations/${active.id}`, { method: 'DELETE' });
+      setList((current) => current.filter((item) => item.id !== active.id));
+      setMessages([]);
+      setActive(null);
+      setDeleteOpen(false);
     } catch (current) {
       setError((current as Error).message);
     } finally {
@@ -571,6 +600,7 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
               <Avatar profile={active.peer} />
               <div><h2>{active.peer.name}</h2><span>@{active.peer.username}{active.peer.bio ? ` · ${active.peer.bio}` : ''}</span></div>
               <span className="header-caption">Uma conversa de cada vez.</span>
+              <button className="icon-button delete-contact" aria-label={`Excluir contato ${active.peer.name}`} title="Excluir contato" onClick={() => setDeleteOpen(true)}><Trash2 size={18} /></button>
             </header>
             <div className="messages">
               {hasMore ? <button className="text-button" disabled={olderBusy} onClick={loadOlder}>{olderBusy ? 'Carregando…' : 'Carregar mensagens anteriores'}</button> : null}
@@ -640,6 +670,23 @@ export default function Chat({ signedIn }: { signedIn: boolean }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir contato?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {active ? `${active.peer.name} sairá da sua lista. A conversa não será apagada para a outra pessoa.` : 'O contato sairá da sua lista.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busy}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="confirm-delete" disabled={busy} onClick={deleteContact}>
+              {busy ? 'Excluindo…' : 'Excluir contato'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {me ? (
         <ProfileSettings

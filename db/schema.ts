@@ -4,6 +4,7 @@ import {
   sqliteTable,
   text,
   uniqueIndex,
+  primaryKey,
 } from 'drizzle-orm/sqlite-core';
 
 export const profiles = sqliteTable('profiles', {
@@ -48,6 +49,19 @@ export const messages = sqliteTable(
   (table) => [
     index('message_conversation_time').on(table.conversation, table.created),
     index('message_file').on(table.fileId),
+  ],
+);
+
+export const hiddenConversations = sqliteTable(
+  'hidden_conversations',
+  {
+    userId: text('user_id').notNull().references(() => profiles.id),
+    conversation: text('conversation').notNull().references(() => conversations.id),
+    hiddenAt: integer('hidden_at').notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.conversation] }),
+    index('hidden_conversation').on(table.conversation),
   ],
 );
 

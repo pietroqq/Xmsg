@@ -1,5 +1,11 @@
 .copy-message { display:inline-flex; align-items:center; gap:5px; margin-top:8px; padding:4px 7px; border:0; border-radius:6px; background:transparent; color:inherit; opacity:.7; font-size:12px; cursor:pointer; }
 .copy-message:hover,.copy-message:focus-visible { opacity:1; background:rgba(128,128,128,.16); }
+.delete-contact { color:#ff8c84; }
+.delete-contact:hover { color:#ffd2ce; background:rgba(203,58,58,.18); }
+.confirm-delete { background:#c93636; color:#fff; }
+.confirm-delete:hover { background:#a92323; }
+[data-slot='alert-dialog-overlay'] { background:rgba(0,0,0,.58)!important; backdrop-filter:blur(12px)!important; }
+[data-slot='alert-dialog-content'] { color:#fff; background:rgba(14,15,23,.97)!important; border:1px solid rgba(255,255,255,.11); box-shadow:0 35px 100px rgba(0,0,0,.58); }
 .bubble p { user-select:text; -webkit-user-select:text; }
 .background-options button.white { background:#fff; color:#202335; }
 .background-options button.white small { color:#606779; }
@@ -21,6 +27,8 @@ html[data-chat-theme='white'] .read { color:#087463; }
 html[data-chat-theme='white'] :is(.attachment-preview,.emoji-picker,.stack-card) { background:#fff; color:#202335; border-color:#dce0e8; }
 html[data-chat-theme='white'] :is(.attachment-preview small,.attachment-preview button,.upload-percent,.my-profile a,.rail-bottom) { color:#606779; }
 html[data-chat-theme='white'] [data-slot='dialog-content'] { color:#202335; background:#fff !important; border-color:#dce0e8; box-shadow:0 30px 90px #20233530; }
+html[data-chat-theme='white'] [data-slot='alert-dialog-content'] { color:#202335; background:#fff!important; border-color:#dce0e8; box-shadow:0 30px 90px #20233530; }
+html[data-chat-theme='white'] .delete-contact { color:#b12626; }
 html[data-chat-theme='white'] :is(.settings-form label,.settings-form legend) { color:#424b60; }
 html[data-chat-theme='white'] .reveal-heading { background:linear-gradient(90deg,#202335 var(--reveal),#aab0bf var(--reveal)); background-clip:text; -webkit-background-clip:text; }
 html[data-chat-theme='white'] .accent-options button.active { border-color:#202335; }

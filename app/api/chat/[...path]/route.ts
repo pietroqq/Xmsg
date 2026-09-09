@@ -243,7 +243,12 @@ async function handle(request: Request) {
         const row = await db
           .prepare('SELECT id FROM conversations WHERE a=? AND b=?')
           .bind(a, b)
-          .first();
+          .first<{ id: string }>();
+        if (!row) fail('Não foi possível abrir a conversa.');
+        await db
+          .prepare('DELETE FROM hidden_conversations WHERE user_id=? AND conversation=?')
+          .bind(uid, row.id)
+          .run();
         return json(row);
       }
       const { results } = await db
@@ -252,9 +257,14 @@ async function handle(request: Request) {
           (SELECT CASE WHEN body='' THEN filename ELSE body END FROM messages WHERE conversation=c.id ORDER BY created DESC,rowid DESC LIMIT 1) AS preview,
           (SELECT count(*) FROM messages WHERE conversation=c.id AND sender<>? AND read_at IS NULL) AS unread
           FROM conversations c JOIN profiles p ON p.id=CASE WHEN c.a=? THEN c.b ELSE c.a END
-          WHERE c.a=? OR c.b=? ORDER BY c.updated DESC`,
+          WHERE (c.a=? OR c.b=?)
+          AND NOT EXISTS (
+            SELECT 1 FROM hidden_conversations h
+            WHERE h.user_id=? AND h.conversation=c.id
+          )
+          ORDER BY c.updated DESC`,
         )
-        .bind(uid, uid, uid, uid)
+        .bind(uid, uid, uid, uid, uid)
         .all();
       return json({
         conversations: results.map((row) => ({
@@ -274,6 +284,19 @@ async function handle(request: Request) {
           unread: row.unread,
         })),
       });
+    }
+
+    const conversationMatch = path.match(/^conversations\/([^/]+)$/);
+    if (conversationMatch && request.method === 'DELETE') {
+      const id = conversationMatch[1];
+      await member(id, uid);
+      await db
+        .prepare(
+          'INSERT INTO hidden_conversations(user_id,conversation,hidden_at) VALUES(?,?,?) ON CONFLICT(user_id,conversation) DO UPDATE SET hidden_at=excluded.hidden_at',
+        )
+        .bind(uid, id, Date.now())
+        .run();
+      return json({ ok: true });
     }
 
     if (path === 'messages') {
@@ -336,6 +359,7 @@ async function handle(request: Request) {
             )
             .bind(requestId, id, uid, body, now, fileId, filename, mime),
           db.prepare('UPDATE conversations SET updated=? WHERE id=?').bind(now, id),
+          db.prepare('DELETE FROM hidden_conversations WHERE conversation=?').bind(id),
         ]);
       } catch (error) {
         if (fileId) await files().delete(fileId);
@@ -471,6 +495,9 @@ async function handle(request: Request) {
           db
             .prepare('UPDATE conversations SET updated=? WHERE id=?')
             .bind(now, upload.conversation),
+          db
+            .prepare('DELETE FROM hidden_conversations WHERE conversation=?')
+            .bind(upload.conversation),
         ]);
       } catch (error) {
         await files().delete(upload.object_key);
@@ -523,3 +550,4 @@ async function handle(request: Request) {
 export const GET = handle;
 export const POST = handle;
 export const PUT = handle;
+export const DELETE = handle;
